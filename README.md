@@ -1,89 +1,53 @@
-# 🔧 AI Developer Toolkit
 
-A collection of intelligent tools built with Python to boost your development productivity — from code refinement to audio transcription.
+# 🔧 Python Automation Toolkit
 
----
+A collection of small but powerful Python tools to streamline data analysis, code maintenance, and other productivity workflows.
 
-## 🧩 Features & Roadmap
+## ✨ Features
 
-### ✅ 1. Python Script Refiner
-A utility to:
-- Automatically clean and format Python scripts.
-- Add **clear, English comments** to improve readability.
-- Detect and remove **unused imports and dependencies**.
-
-### 🧪 2. Unit Test Generator
-A tool that:
-- Parses a Python script and **auto-generates unit tests** in a separate `.py` file.
-- Lets you **run and validate** the tests to ensure your code works as expected.
-
-### 📊 3. CSV Insight Generator
-Give it a CSV file and get:
-- Descriptive **statistics, summaries, and visualizations**.
-- Smart insights on **correlations, outliers, and missing data**.
-
-### 📄 4. Smart CV Screener
-Paste in a **job description (TXT)** and provide multiple CVs. The tool will:
-- Analyze relevance based on **keywords and job fit**.
-- Return a ranked list of the **most promising candidates**.
-
-### 🎙️ 5. MP3 Transcriber (>25MB)
-Upload a large MP3 file and this tool will:
-- Handle **chunked uploads and processing**.
-- Return an accurate **text transcript** of the audio content using state-of-the-art models.
-
----
+- 🧹 Script Refiner: Automatically clean up Python scripts by removing unused dependencies and adding helpful comments in English.  
+- 🧪 Unit Test Generator: Create and run standalone unit tests for your scripts to ensure reliability.  
+- 📊 CSV Data Insights: Analyze CSV files and extract valuable insights automatically.  
+- 📄 Resume Screener: Filter and review relevant CVs based on a plain-text job description.  
+- 🔊 MP3 Transcriber: Transcribe large MP3 files (over 25MB) into text using efficient chunking and processing.
 
 ## 🚀 Getting Started
 
-```bash
-git clone https://github.com/yourusername/ai-developer-toolkit.git
-cd ai-developer-toolkit
+1. Clone the repository:
+```
+git clone https://github.com/your-username/python-automation-toolkit.git
+cd python-automation-toolkit
+```
+
+2. Install dependencies:
+```
 pip install -r requirements.txt
 ```
 
----
+3. Run tools individually (example):
+```
+python script_refiner.py path/to/your_script.py
+```
 
-## 📂 Project Structure (Planned)
+## 📁 Project Structure
 
 ```
 .
-├── script_refiner/
-├── test_generator/
-├── csv_insights/
-├── cv_screener/
-├── mp3_transcriber/
-├── README.md
-└── requirements.txt
+├── script_refiner.py         # Tool to clean and comment Python scripts
+├── test_generator.py         # Tool to create and run unit tests
+├── csv_insights.py           # Tool to analyze CSV files
+├── resume_screener.py        # Tool to screen CVs using job descriptions
+├── mp3_transcriber.py        # Tool to transcribe large MP3 files
+├── requirements.txt          # Project dependencies
+└── README.md                 # This file
 ```
-
----
-
-## 🧠 Tech Stack
-
-- Python 3.11+
-- pandas, numpy
-- scikit-learn
-- openai / whisper (for transcription)
-- PyTest (for testing tools)
-- Flask (optional web UI in the future)
-
----
-
-## 💡 Contribute
-
-Pull requests, suggestions, and ideas are welcome! Feel free to open an issue or fork the project.
-
----
-
-## 📜 License
-
-MIT License — use freely, refine widely.
-
----
 
 ## ⚠️ Disclaimer
 
-This toolkit is provided for educational and productivity purposes only.  
-**The author assumes no responsibility for any misuse or unintended consequences resulting from the use of these tools.**  
-Use responsibly and ensure compliance with all applicable laws and ethical guidelines.
+This project is provided **as-is** for educational and productivity purposes.  
+**I take no responsibility for any misuse, legal implications, or data issues resulting from the use of these tools.**  
+Use responsibly and at your own risk.
+
+## 🧠 Contributions
+
+Pull requests are welcome! If you have suggestions or improvements, feel free to fork and contribute.
