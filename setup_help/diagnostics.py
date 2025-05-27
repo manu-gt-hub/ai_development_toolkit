@@ -31,8 +31,6 @@ class Diagnostics:
     def end(self):
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.log(f"\n\nCompleted diagnostics at {now}\n")
-        print("\nPlease send these diagnostics to me at ed@edwarddonner.com")
-        print(f"Either copy & paste the above output into an email, or attach the file {self.FILENAME} that has been created in this directory.")
     
 
     def _log_error(self, message):
