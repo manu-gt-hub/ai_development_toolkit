@@ -130,7 +130,7 @@ def evaluate_candidate(model_source, candidate_desc, job_description, keywrods_s
     
     {{
       "name": "Candidate Name",
-      "match_percentage": number between 0 and 100,
+      "match_percentage": number between 0 and 100 based on seniority and technologies fit with the job description ,
       "summary": "A  summary explaining the match, including relevant skills, technologies, and gaps"
     }}
     
