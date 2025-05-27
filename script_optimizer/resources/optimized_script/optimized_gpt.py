@@ -1,68 +1,65 @@
 import pandas as pd
 import numpy as np
 
-def preprocess_data(dataframe):
+def preprocess_dataframe(df):
     """
-    Preprocess the stock data by converting dates, sorting, and calculating various returns and moving averages.
+    Preprocess the DataFrame by converting date columns, sorting,
+    and calculating financial indicators.
 
     Parameters:
-    dataframe (pd.DataFrame): DataFrame containing stock data with 'date' and 'close' columns.
+    df (pd.DataFrame): Input DataFrame containing financial data with 'date' and 'close' columns.
 
     Returns:
-    pd.DataFrame: Processed DataFrame with additional columns for daily returns, cumulative returns,
-                  moving averages, volatility, and trend signals.
+    pd.DataFrame: Preprocessed DataFrame with additional columns for daily return, 
+                  cumulative return, moving averages, volatility, and signals.
     """
     try:
-        # Convert 'date' column to datetime
-        dataframe['date'] = pd.to_datetime(dataframe['date'])
-        
-        # Sort values by date and reset index
-        dataframe = dataframe.sort_values('date').reset_index(drop=True)
+        # Convert 'date' column to datetime format and sort by date
+        df['date'] = pd.to_datetime(df['date'])
+        df = df.sort_values('date').reset_index(drop=True)
 
-        # Calculate daily return
-        dataframe['daily_return'] = dataframe['close'].pct_change()
+        # Calculate daily return as percentage change
+        df['daily_return'] = df['close'].pct_change()
 
         # Calculate cumulative return
-        dataframe['cumulative_return'] = (1 + dataframe['daily_return']).cumprod() - 1
+        df['cumulative_return'] = (1 + df['daily_return']).cumprod() - 1
 
         # Calculate moving averages
-        dataframe['ma_20'] = dataframe['close'].rolling(window=20).mean()
-        dataframe['ma_50'] = dataframe['close'].rolling(window=50).mean()
+        df['ma_20'] = df['close'].rolling(window=20).mean()
+        df['ma_50'] = df['close'].rolling(window=50).mean()
 
-        # Calculate volatility
-        dataframe['volatility_20'] = dataframe['daily_return'].rolling(window=20).std()
+        # Calculate 20-day volatility (standard deviation of daily returns)
+        df['volatility_20'] = df['daily_return'].rolling(window=20).std()
 
-        # Determine moving average signals
-        dataframe['ma_signal'] = np.where(dataframe['ma_20'] > dataframe['ma_50'], 'bullish', 'bearish')
+        # Determine bullish or bearish market conditions
+        df['ma_signal'] = np.where(df['ma_20'] > df['ma_50'], 'bullish', 'bearish')
 
-        # Identify crossover and generate crossover signals
-        dataframe['ma_crossover'] = dataframe['ma_20'] > dataframe['ma_50']
-        dataframe['ma_crossover_signal'] = dataframe['ma_crossover'].astype(int).diff()
+        # Identify moving average crossover signals
+        df['ma_crossover'] = df['ma_20'] > df['ma_50']
+        df['ma_crossover_signal'] = df['ma_crossover'].astype(int).diff()
 
-        # Determine trend based on crossover signals
-        dataframe['trend'] = np.select(
-            [dataframe['ma_crossover_signal'] == 1, dataframe['ma_crossover_signal'] == -1],
-            ['golden_cross', 'death_cross'],
+        # Assign trend based on crossover signals
+        df['trend'] = np.select(
+            [
+                df['ma_crossover_signal'] == 1,  # Golden cross
+                df['ma_crossover_signal'] == -1  # Death cross
+            ],
+            [
+                'golden_cross',
+                'death_cross'
+            ],
             default='no_signal'
         )
 
-        # Drop NaN values and reset index
-        dataframe = dataframe.dropna().reset_index(drop=True)
+        # Drop rows with NaN values and reset index
+        df = df.dropna().reset_index(drop=True)
 
-        return dataframe
+        return df
 
     except Exception as e:
-        print(f"An error occurred while processing data: {e}")
-        return None
+        print(f"An error occurred while processing the DataFrame: {e}")
+        return pd.DataFrame()  # Return an empty DataFrame on error
 
-# Example test cases
-if __name__ == "__main__":
-    # Create sample data
-    sample_data = pd.DataFrame({
-        'date': ['2023-01-01', '2023-01-02', '2023-01-03'],
-        'close': [100, 102, 101]
-    })
-
-    # Preprocess the sample data
-    processed_data = preprocess_data(sample_data)
-    print(processed_data)
+# Sample usage:
+# df = pd.DataFrame({'date': [...], 'close': [...]})
+# processed_df = preprocess_dataframe(df)
