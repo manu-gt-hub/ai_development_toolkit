@@ -33,7 +33,8 @@ def call_chatgpt_openai(prompt: str, model_name: str, system_prompt: str) -> str
         messages=[
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": prompt}
-        ]
+        ],
+        temperature = 0.1
     )
     
     return response.choices[0].message.content
