@@ -9,9 +9,26 @@ import re
 import os
 import json
 
+def anonymize_resume(text):
 
+    prompt = f"""
+    I want you to anonymize this CV text content and return it without sensible data (name, surname, email, location, telephone number...), DON'T provide notes
+    
+    {text}
+    """
+    
+    response = ollama.chat(
+        model="llama3.2",
+        messages=[
+            {"role": "system", "content": "you are a CV anonymizer"},
+            {"role": "user", "content": prompt}
+        ]
+    )
+    llm_response = response["message"]["content"]
+    return llm_response
+    
 def call_llama3_ollama(prompt: str, model: str, system_prompt: str) -> str:
-    import ollama
+    
     response = ollama.chat(
         model=model,
         messages=[
