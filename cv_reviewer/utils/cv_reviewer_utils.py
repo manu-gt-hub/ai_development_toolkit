@@ -9,6 +9,99 @@ import re
 import os
 import json
 
+def evaluate_all_candidates(model, job_description, mandatory_keywords, landing_path, language):
+    """
+    Process all CVs in the given directory and evaluate them against a job description.
+
+    Args:
+        model (str): Model name to be used for evaluation.
+        job_description (str): The job description to compare candidates against.
+        mandatory_keywords (list): List of keywords to highlight in evaluation.
+        landing_path (str): Path to the folder containing CV files.
+
+    Returns:
+        list: A list of JSON strings representing the evaluation results.
+    """
+    matches = []
+
+    for filename in os.listdir(landing_path):
+        path = os.path.join(landing_path, filename)
+        
+        if os.path.isfile(path):
+            cv_text = extract_text_from_cv(path)
+            if cv_text is not None:
+                
+                words = cv_text.split()    
+                num_of_words = len(words)
+
+                if num_of_words > 5:    
+                    anonymized_desc = anonymize_resume(cv_text)
+
+                    keywords_string = "Additional note: " + evaluate_mandatory_keywords(anonymized_desc, mandatory_keywords)
+
+                    llm_answer = evaluate_candidate(model, anonymized_desc, job_description, language, keywords_string)
+                    llm_answer['name'] = filename
+
+                    updated_json_str = json.dumps(llm_answer, indent=2)
+                    matches.append(updated_json_str)
+
+    return matches
+
+def render_candidate_evaluations(matches):
+    """
+    Parse, sort and display candidate evaluations in Markdown format.
+
+    Args:
+        matches (list): List of candidate evaluation results (as JSON strings or dicts).
+    """
+    # Ensure all elements are dictionaries
+    parsed_matches = [json.loads(m) if isinstance(m, str) else m for m in matches]
+    sorted_matches = sorted(parsed_matches, key=lambda x: x.get("match_percentage", 0), reverse=True)
+
+    markdown_text = "### 📊 Candidate Evaluations\n\n"
+
+    for i, match in enumerate(sorted_matches, start=1):
+        questions = match.get("recommended_questions", "")
+
+        # Handle both list and string formats
+        if isinstance(questions, list):
+            question_lines = [q.strip("-• ").strip() for q in questions if q.strip()]
+        else:
+            question_lines = [q.strip("-• ").strip() for q in questions.split("\n") if q.strip()]
+
+        question_md = "\n".join([f"- {q}" for q in question_lines])
+
+        markdown_text += f"""
+**🧑‍💼 Candidate #{i}: {match['name']} – {match['match_percentage']}%**
+
+{match.get('summary', 'No summary provided.')}
+
+**📝 Recommended Questions**
+{question_md}
+
+---
+"""
+
+    return markdown_text
+
+def analyze_candidates(model, job_description, mandatory_keywords, landing_path, language):
+    
+    matches = evaluate_all_candidates(model, job_description, mandatory_keywords, landing_path, language)
+    evaluation_text = render_candidate_evaluations(matches)
+    
+    return evaluation_text
+    
+def extract_json(text):
+    try:
+        # Intenta encontrar el primer bloque de texto que parezca JSON
+        json_match = re.search(r"\{.*\}", text, re.DOTALL)
+        if json_match:
+            return json.loads(json_match.group())
+        else:
+            raise ValueError("No valid JSON block found")
+    except Exception as e:
+        raise ValueError(f"Error parsing JSON: {e}\nRaw text:\n{text}")
+
 def anonymize_resume(text):
 
     prompt = f"""
@@ -130,7 +223,7 @@ def get_job_description(url):
     else:
         return f"Error: Unable to fetch the page. Status code: {response.status_code}"
 
-def evaluate_candidate(model_source, candidate_desc, job_description, keywrods_string = ""):
+def evaluate_candidate(model_source, candidate_desc, job_description, language, keywords_string = ""):
 
     system_prompt = "you are a CV reviewer."
        
@@ -148,20 +241,25 @@ def evaluate_candidate(model_source, candidate_desc, job_description, keywrods_s
     {{
       "name": "Candidate Name",
       "match_percentage": number between 0 and 100 based on seniority and technologies fit with the job description ,
-      "summary": "A  summary explaining the match, including relevant skills, technologies, and gaps"
+      "summary": "A  summary explaining the match, including relevant skills, technologies, and gaps",
+      "recommended_questions" : list about recommended questions, focused on mandatory keywords (if provided)
     }}
     
-    ❗️Output STRICTLY as valid JSON. Do NOT include any explanations, extra text, markdown formatting, or comments.
+    ❗️Output STRICTLY as valid JSON with {language} language content. Do NOT include any explanations, extra text, markdown formatting, or comments.
     
     Example:
     
     {{
       "name": "John Marston",
       "match_percentage": 78,
-      "summary": "ihe has strong knowledge on AWS, he has developed using Spark, Python and knows a few database systems."
+      "summary": "he has strong knowledge on AWS, he has developed using Spark, Python and knows a few database systems.",
+      "recommended_questions" : [
+          "What is your current role's focus on data analytics and reporting?",
+          "Can you walk me through your experience with data modeling concepts?"
+        ]
     }}
 
-    {keywrods_string}
+    {keywords_string}
     """
     
     if "llama" in model_source.lower():
@@ -182,7 +280,7 @@ def evaluate_candidate(model_source, candidate_desc, job_description, keywrods_s
     
     #print(full_response)
     
-    result = json.loads(clean_response)
+    result = extract_json(clean_response)
     return result
 
 def evaluate_mandatory_keywords(cv_text, mandatory_keywords):
