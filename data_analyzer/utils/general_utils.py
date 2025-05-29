@@ -23,6 +23,7 @@ def anonymize_and_process(
     output_file_name,
     report_file_name,
     prompt,
+    input_filename = None,
     show_sample=False
 ):
     report_lines = []
@@ -34,12 +35,15 @@ def anonymize_and_process(
     openai.api_type = "openai"  # 👈 Required to resolve ambiguity
 
     try:
-        # Find the first CSV file in the input directory
-        csv_files = glob.glob(os.path.join(input_csv_dir, "*.csv"))
-        if not csv_files:
-            raise FileNotFoundError(f"No CSV file found in {input_csv_dir}")
+        if input_filename is None:
+            # Find the first CSV file in the input directory
+            csv_files = glob.glob(os.path.join(input_csv_dir, "*.csv"))
+            csv_file_path = csv_files[0]
+            if not csv_files:
+                raise FileNotFoundError(f"No CSV file found in {input_csv_dir}")
+        else:
+            csv_file_path = input_csv_dir + input_filename        
         
-        csv_file_path = csv_files[0]
         df = pd.read_csv(csv_file_path)
         
         if show_sample:
