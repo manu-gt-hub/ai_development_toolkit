@@ -131,16 +131,16 @@ def anonymize_and_process(
             f.write("\n".join(report_lines) + "\n" + error_message)
 
 def print_report(report):
-    print("\n===== Processing Report =====\n")
+    display(Markdown("\n===== Processing Report =====\n"))
 
     for line in report:
         if line.startswith('🤖 Assistant response:'):
-            print(line)
-            print("\n--- Begin Assistant Response ---\n")
+            display(Markdown(line))
+            display(Markdown("\n--- Begin Assistant Response ---\n"))
         elif line.startswith("The DataFrame contains"):
-            print(line)
-            print("\n--- End Assistant Response ---\n")
+            display(Markdown(line))
+            display(Markdown("\n--- End Assistant Response ---\n"))
         else:
-            print(line)
+            display(Markdown(line))
     
-    print("\n=================================")
+    display(Markdown("\n================================="))
