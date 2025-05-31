@@ -3,10 +3,10 @@ import glob
 import whisper
 import ollama
 
-def llm_summarization(transcription):
+def llm_summarization(transcription, language):
     # Generate meeting minutes from transcription
     system_message = "You are an assistant that produces minutes of meetings from transcripts, with summary, key discussion points, in markdown."
-    user_prompt = f"Below is an extract transcript from a conversation. Please write minutes in markdown, including a summary with any relevant discussion points;\n{transcription}"
+    user_prompt = f"Below is an extract transcript from a conversation. Please write minutes in markdown in {language}, including a summary with any relevant discussion points;\n{transcription}"
     response = ollama.chat(
         model="llama3.2",
         messages=[
@@ -17,7 +17,7 @@ def llm_summarization(transcription):
     summary = response["message"]["content"]
     return summary
 
-def transcribe_audio(audio_dir: str, output_dir: str, model_size: str = "medium") -> None:
+def transcribe_audio(audio_dir: str, output_dir: str, model_size: str = "medium", language: str = "english") -> None:
     """
     Transcribe the first MP3 file found in `audio_dir` using Whisper model of size `model_size`.
     Saves transcription and summary to `output_dir`.
@@ -54,11 +54,11 @@ def transcribe_audio(audio_dir: str, output_dir: str, model_size: str = "medium"
 
     # 6. Optional: summarize the text with a local or Hugging Face model
     print("🧾 Generating text summary using LLaMa 3...")
-    summary = llm_summarization(transcription)
+    summary = llm_summarization(transcription, language)
 
     # 7. Save summary
     summary_path = os.path.join(output_dir, "summary.txt")
     with open(summary_path, "w", encoding="utf-8") as f:
         f.write(summary)
     print(f"📄 Summary saved at {summary_path}")
-    display(summary)
+    return summary
