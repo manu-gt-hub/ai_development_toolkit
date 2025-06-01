@@ -9,7 +9,7 @@ import re
 import os
 import json
 
-def evaluate_all_candidates(model, job_description, mandatory_keywords, landing_path, language):
+def evaluate_all_candidates(model, job_description, mandatory_keywords, landing_path, language, execution_mode):
     """
     Process all CVs in the given directory and evaluate them against a job description.
 
@@ -39,7 +39,7 @@ def evaluate_all_candidates(model, job_description, mandatory_keywords, landing_
 
                     keywords_string = "Additional note: " + evaluate_mandatory_keywords(anonymized_desc, mandatory_keywords)
 
-                    llm_answer = evaluate_candidate(model, anonymized_desc, job_description, language, keywords_string)
+                    llm_answer = evaluate_candidate(model, anonymized_desc, job_description, language, keywords_string, execution_mode)
                     llm_answer['name'] = filename
 
                     updated_json_str = json.dumps(llm_answer, indent=2)
@@ -84,9 +84,9 @@ def render_candidate_evaluations(matches):
 
     return markdown_text
 
-def analyze_candidates(model, job_description, mandatory_keywords, landing_path, language):
+def analyze_candidates(model, job_description, mandatory_keywords, landing_path, language, execution_mode = "online"):
     
-    matches = evaluate_all_candidates(model, job_description, mandatory_keywords, landing_path, language)
+    matches = evaluate_all_candidates(model, job_description, mandatory_keywords, landing_path, language, execution_mode)
     evaluation_text = render_candidate_evaluations(matches)
     
     return evaluation_text
@@ -223,7 +223,7 @@ def get_job_description(url):
     else:
         return f"Error: Unable to fetch the page. Status code: {response.status_code}"
 
-def evaluate_candidate(model_source, candidate_desc, job_description, language, keywords_string = ""):
+def evaluate_candidate(model_source, candidate_desc, job_description, language, execution_mode, keywords_string = ""):
 
     system_prompt = "you are a CV reviewer."
        
@@ -262,16 +262,13 @@ def evaluate_candidate(model_source, candidate_desc, job_description, language, 
     {keywords_string}
     """
     
-    if "llama" in model_source.lower():
+    if "offline" in execution_mode.lower():
         print(f"▶️ Using {model_source} via Ollama...")
         full_response = call_llama3_ollama(prompt, model_source, system_prompt)
     
-    elif "gpt" in model_source.lower():
+    else:
         print(f"▶️ Using {model_source} via OpenAI API...")
         full_response = call_chatgpt_openai(prompt, model_source, system_prompt)
-    
-    else:
-        raise ValueError("Invalid model_source. Use 'llama3' or 'chatgpt'.")
 
     #print(prompt)
 
