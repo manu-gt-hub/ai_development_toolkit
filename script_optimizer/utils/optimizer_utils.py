@@ -4,6 +4,7 @@ from openai import OpenAI
 import ollama
 from dotenv import load_dotenv
 import httpx
+from IPython.display import Markdown, display
 
 def run_python_script(script_path: str):
     """
@@ -60,7 +61,9 @@ def call_chatgpt_openai(prompt: str, model_name: str, system_prompt: str) -> str
     
     return response.choices[0].message.content
 
-def optimize_script(input_path: str, extension: str, output_dir: str, model_source: str, system_prompt: str, output_file_name="optimized_script.py", create_unitary_tests=True):
+def optimize_script(input_path: str, extension: str, output_dir: str, model_source: str, system_prompt: str, execution_mode, output_file_name="optimized_script.py", create_unitary_tests=True):
+
+        
     if not os.path.isdir(input_path):
         raise NotADirectoryError(f"{input_path} is not a directory")
 
@@ -69,47 +72,58 @@ def optimize_script(input_path: str, extension: str, output_dir: str, model_sour
 
     with open(file_path, "r", encoding="utf-8") as f:
         original_code = f.read()
-
+        
     if create_unitary_tests:
         unit_test_string = "12. write unit tests"
     else:
         unit_test_string = "12. DO NOT write unit tests"
         
-    
     prompt = f"""
     
-    Refactor the following Python code with the following goals:
-    
-    1. Add clear and concise comments explaining each function, its parameters, return values, and complex logic.
-    2. Document all functions using standard Python docstrings (PEP 257).
-    3. Remove unused imports and dependencies.
-    4. Simplify repetitive or redundant code by creating reusable functions.
-    5. Use descriptive variable, function, and class names.
-    6. Eliminate dead or unused code.
-    7. Add try/except blocks for error handling where appropriate.
-    8. Optimize loops and pandas/numpy operations (prefer vectorized solutions).
-    9. Separate logic into functions or classes.
-    10. Write basic unit tests for each function.
-    11. Ensure PEP 8 compliance.
-    {unit_test_string}
-    
-    IMPORTANT: Return ONLY the improved Python script and a section NOTE: with the explanation about what you have done IN PLAIN TEXT
-    
-    ```python
+You are a Python expert. Refactor the following Python script with these goals:
+
+1. Add concise comments explaining the purpose of each function, its parameters, return values, and any complex logic.
+2. Use proper Python docstrings (PEP 257) for every function.
+3. Remove unused imports and dead code.
+4. Replace redundant or repeated logic with reusable functions if appropriate.
+5. Use meaningful and descriptive names for all variables and functions.
+6. Add error handling with try/except blocks where needed.
+7. Ensure that all pandas and numpy operations are optimized and vectorized.
+8. Organize the logic into separate functions or classes as needed.
+9. Ensure PEP 8 style compliance.
+10. Ensure the script is fully self-contained, with all necessary imports and definitions.
+11. Include a block:
+
+    if __name__ == "__main__":
+        # run a simple example or test to demonstrate the main functionality
+        
+{unit_test_string}
+
+12. The refactored script MUST be executable without any errors by running:
+
+    subprocess.run(["python", script_path], capture_output=True, text=True, check=True)
+
+IMPORTANT:
+- Return ONLY the full Python script.
+- Then a section titled "NOTE:" (in plain text) explaining what was done and any assumptions.
+- Do NOT include explanations before the script or extra formatting.
+
+ORIGINAL CODE:
+
     {original_code}
-    ```
     """.strip()
-    
-    if "llama" in model_source.lower():
+
+    if execution_mode.lower() == "offline":
         print(f"▶️ Using {model_source} via Ollama...")
         full_response = call_llama3_ollama(prompt, model_source, system_prompt)
     
-    elif "gpt" in model_source.lower():
+    elif execution_mode.lower() == "online":
         print(f"▶️ Using {model_source} via OpenAI API...")
         full_response = call_chatgpt_openai(prompt, model_source, system_prompt)
     
     else:
-        raise ValueError("Invalid model_source. Use 'llama3' or 'chatgpt'.")
+        raise ValueError("Invalid execution_mode. Use 'offline' or 'online'.")
+    
 
     os.makedirs(output_dir, exist_ok=True)
 
@@ -125,10 +139,10 @@ def optimize_script(input_path: str, extension: str, output_dir: str, model_sour
     # 🔸 here is the NOTE section
     if len(parts) > 1:
         notes = parts[1].replace("```", "").strip()
-        print("📝 Notes from LLM:\n", notes)
+        display(Markdown(f"📝 **Notes from LLM:**\n\n{notes}"))
     else:
         notes = None
-        print("⚠️ No notes section found.")
+        display(Markdown("⚠️ No notes section found."))
 
     with open(output_file_path, "w", encoding="utf-8") as f:
         f.write(optimized_code)

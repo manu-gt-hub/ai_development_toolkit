@@ -5,18 +5,17 @@ A collection of small but powerful Python tools to streamline data analysis, cod
 
 ## ✨ Features
 
-- 🧹 Script Refiner: Automatically clean up Python scripts by removing unused dependencies and adding helpful comments in English.  
-- 🧪 Unit Test Generator: Create and run standalone unit tests for your scripts to ensure reliability.  
-- 📊 CSV Data Insights: Analyze CSV files and extract valuable insights automatically.  
-- 📄 Resume Screener: Filter and review relevant CVs based on a plain-text job description.  
-- 🔊 MP3 Transcriber: Transcribe large MP3 files (over 25MB) into text using efficient chunking and processing.
+- 🚀 Script optimizer: Automatically **(online/offline)** optimizes up Python scripts & generates unit tests. 
+- 📊 CSV Data Insights: Analyze CSV files and extract valuable insights automatically in NLP.  
+- 📄 CV reviewer: Ranks candidates **(online/offline)** by anonymized CVs content based in the job description and creates recommended questions.  
+- 🔊 MP3 Transcriber: Transcribe **offline** large MP3 files (over 25MB) into text using efficient chunking and processing.
 
 ## 🚀 Getting Started
 
 1. Clone the repository:
 ```
-git clone https://github.com/your-username/python-automation-toolkit.git
-cd python-automation-toolkit
+git clone https://github.com/manu-gt-hub/ai_development_toolkit.git
+cd ai_development_toolkit
 ```
 
 2. Install dependencies:
@@ -26,20 +25,7 @@ pip install -r requirements.txt
 
 3. Run tools individually (example):
 ```
-python script_refiner.py path/to/your_script.py
-```
-
-## 📁 Project Structure
-
-```
-.
-├── script_refiner.py         # Tool to clean and comment Python scripts
-├── test_generator.py         # Tool to create and run unit tests
-├── csv_insights.py           # Tool to analyze CSV files
-├── resume_screener.py        # Tool to screen CVs using job descriptions
-├── mp3_transcriber.py        # Tool to transcribe large MP3 files
-├── requirements.txt          # Project dependencies
-└── README.md                 # This file
+python script_optimizer.py path/to/your_script.py
 ```
 
 ## ⚠️ Disclaimer
