@@ -39,7 +39,7 @@ def evaluate_all_candidates(model, job_description, mandatory_keywords, landing_
 
                     keywords_string = "Additional note: " + evaluate_mandatory_keywords(anonymized_desc, mandatory_keywords)
 
-                    llm_answer = evaluate_candidate(model, anonymized_desc, job_description, language, keywords_string, execution_mode)
+                    llm_answer = evaluate_candidate(model, anonymized_desc, job_description, language, execution_mode, keywords_string)
                     llm_answer['name'] = filename
 
                     updated_json_str = json.dumps(llm_answer, indent=2)
@@ -84,7 +84,7 @@ def render_candidate_evaluations(matches):
 
     return markdown_text
 
-def analyze_candidates(model, job_description, mandatory_keywords, landing_path, language, execution_mode = "online"):
+def analyze_candidates(model, job_description, mandatory_keywords, landing_path, language, execution_mode):
     
     matches = evaluate_all_candidates(model, job_description, mandatory_keywords, landing_path, language, execution_mode)
     evaluation_text = render_candidate_evaluations(matches)
@@ -262,13 +262,16 @@ def evaluate_candidate(model_source, candidate_desc, job_description, language, 
     {keywords_string}
     """
     
-    if "offline" in execution_mode.lower():
+    if execution_mode.lower() == "offline":
         print(f"▶️ Using {model_source} via Ollama...")
         full_response = call_llama3_ollama(prompt, model_source, system_prompt)
     
-    else:
+    elif execution_mode.lower() == "online":
         print(f"▶️ Using {model_source} via OpenAI API...")
         full_response = call_chatgpt_openai(prompt, model_source, system_prompt)
+    
+    else:
+        raise ValueError("Invalid execution_mode. Use 'offline' or 'online'.")
 
     #print(prompt)
 
