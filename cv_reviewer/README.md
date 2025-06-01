@@ -4,6 +4,6 @@ Ranks anonymized CVs by relevance to a job description using AI. Works in both *
 
 ## Features
 - Compares CVs to a job description using embeddings.
-- Ranks candidates based on semantic similarity.
+- Ranks candidates based on job description.
 - Highlights top candidates and red flags.
 - Generates suggested interview questions.
