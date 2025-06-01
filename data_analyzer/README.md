@@ -5,5 +5,4 @@ Automatically analyzes CSV files using natural language processing to generate a
 ## Features
 - Extracts column-wise statistics and types.
 - Identifies missing values and outliers.
-- Generates textual insights using NLP techniques.
-- Offers recommendations for further analysis.
+- Generates textual insights using NLP techniques (prompt).
