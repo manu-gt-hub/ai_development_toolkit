@@ -23,7 +23,13 @@ cd ai_toolkit
 pip install -r requirements.txt
 ```
 
-3. Run tools individually (example):
+3. Run environment:
+```
+- cd ai_toolkit
+- conda activate dev_toolkit
+```
+
+4. Run tools individually (example):
 ```
 python script_optimizer.py path/to/your_script.py
 ```
