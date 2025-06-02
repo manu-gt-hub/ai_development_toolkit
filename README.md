@@ -1,5 +1,5 @@
 
-# 🔧 Python Automation Toolkit
+# 🔧 Python AI Toolkit
 
 A collection of small but powerful Python tools to streamline data analysis, code maintenance, and other productivity workflows.
 
@@ -14,8 +14,8 @@ A collection of small but powerful Python tools to streamline data analysis, cod
 
 1. Clone the repository:
 ```
-git clone https://github.com/manu-gt-hub/ai_development_toolkit.git
-cd ai_development_toolkit
+git clone https://github.com/manu-gt-hub/ai_toolkit.git
+cd ai_toolkit
 ```
 
 2. Install dependencies:
