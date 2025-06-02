@@ -74,7 +74,7 @@ def optimize_script(input_path: str, extension: str, output_dir: str, model_sour
         original_code = f.read()
         
     if create_unitary_tests:
-        unit_test_string = "12. write unit tests"
+        unit_test_string = "12. write unit tests for EVERY SINGLE FUNCTION on the code"
     else:
         unit_test_string = "12. DO NOT write unit tests"
         
