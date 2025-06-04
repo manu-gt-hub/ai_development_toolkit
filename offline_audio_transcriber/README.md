@@ -1,4 +1,4 @@
-# 🔊 MP3 Transcriber
+# 🔊 offline MP3 Transcriber
 
 Efficiently transcribes **offline** large MP3 audio files (25MB+) into accurate text using local models and chunked audio processing.
 
